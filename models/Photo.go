@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"pbi-rakamin-go/database"
 
 	"gorm.io/gorm"
@@ -29,6 +30,31 @@ func (photo *Photo) Save() (*Photo, error) {
 	}
 
 	return photo, nil
+}
+
+func (photo *Photo) Update() error {
+	// Pastikan photo memiliki ID yang valid
+	if photo.ID == 0 {
+		return errors.New("Invalid photo ID")
+	}
+
+	// Lakukan operasi update ke database
+	err := database.Database.Model(&Photo{}).Where("id = ?", photo.ID).Updates(&photo).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func FindPhotoById(photoId string) (*Photo, error) {
+	var photo Photo
+	err := database.Database.Where("id = ?", photoId).First(&photo).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &photo, nil
 }
 
 
