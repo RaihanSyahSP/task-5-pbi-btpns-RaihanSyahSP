@@ -11,6 +11,32 @@ import (
 )
 
 
+func DeleteUser(context *gin.Context) {
+    // Get the user ID from the request parameters
+    userId, err := strconv.ParseUint(context.Param("userId"), 10, 64)
+    if err != nil {
+        context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Find the user by ID
+    user, err := models.FindUserById(uint(userId))
+    if err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Delete the user from the database
+    if err := user.Delete(); err != nil {
+        context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    // Send a successful response
+    context.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
+}
+
+
 func UpdateUser(context *gin.Context) {
     // Dapatkan user dari JWT atau sesuai dengan kebutuhan aplikasi Anda
     currentUser, err := helper.CurrentUser(context)

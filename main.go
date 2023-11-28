@@ -46,6 +46,7 @@ func serveApplication() {
 
     // Tambahkan route untuk UpdateUser
     protectedRoutes.PUT("/users/:userId", controller.UpdateUser)
+    protectedRoutes.DELETE("/users/:userId", controller.DeleteUser)
 
     router.Run(":8000")
     fmt.Println("Server running on port 8000")

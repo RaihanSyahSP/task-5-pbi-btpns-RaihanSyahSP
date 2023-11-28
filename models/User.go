@@ -42,6 +42,20 @@ func (user *User) Update() error {
     return nil
 }
 
+func (user *User) Delete() error {
+    if user.ID == 0 {
+        return errors.New("Invalid user ID")
+    }
+
+    err:= database.Database.Model(&User{}).Where("id = ?", user.ID).Delete(&user).Error
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+
 
 func (user *User) BeforeSave(*gorm.DB) error {
     passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
