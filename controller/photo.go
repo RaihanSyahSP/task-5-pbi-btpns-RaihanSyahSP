@@ -135,6 +135,40 @@ func UpdatePhoto (context *gin.Context) {
 	context.JSON(http.StatusOK, gin.H{"data": photo})
 }
 
+func DeletePhoto(context *gin.Context) {
+	user, err := helper.CurrentUser(context)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Dapatkan ID photo dari URL
+	photoId := getPhotoIDFromRequest(context)
+	// Dapatkan photo dari database
+
+	photo, err := models.FindPhotoById(photoId)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Pastikan photo yang akan diupdate adalah milik user yang sedang login
+	if photo.UserID != user.ID {
+		context.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to update this photo"})
+		return
+	}
+
+	// Lakukan operasi delete ke database
+	if err := photo.Delete(); err != nil {
+		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Kirim response ke client
+	context.JSON(http.StatusOK, gin.H{"message": "Photo deleted successfully"})
+}
+
 func getPhotoIDFromRequest(context *gin.Context) string {
     // Fungsi ini bergantung pada bagaimana Anda mengekstrak userId dari request.
     // Sesuaikan dengan kebutuhan dan implementasi endpoint Anda.

@@ -44,6 +44,7 @@ func serveApplication() {
     protectedRoutes.POST("/photos", controller.AddPhoto)
     protectedRoutes.GET("/photos", controller.GetAllPhotos)
     protectedRoutes.PUT("/photos/:photoId", controller.UpdatePhoto)
+    protectedRoutes.DELETE("/photos/:photoId", controller.DeletePhoto)
 
     // Tambahkan route untuk UpdateUser
     protectedRoutes.PUT("/users/:userId", controller.UpdateUser)

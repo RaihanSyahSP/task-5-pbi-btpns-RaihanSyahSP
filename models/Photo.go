@@ -47,6 +47,21 @@ func (photo *Photo) Update() error {
 	return nil
 }
 
+func (photo *Photo) Delete() error {
+	// Pastikan photo memiliki ID yang valid
+	if photo.ID == 0 {
+		return errors.New("Invalid photo ID")
+	}
+
+	// Lakukan operasi delete ke database
+	err:= database.Database.Model(&Photo{}).Where("id = ?", photo.ID).Delete(&photo).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func FindPhotoById(photoId string) (*Photo, error) {
 	var photo Photo
 	err := database.Database.Where("id = ?", photoId).First(&photo).Error
