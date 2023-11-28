@@ -44,6 +44,9 @@ func serveApplication() {
     protectedRoutes.POST("/photos", controller.AddPhoto)
     protectedRoutes.GET("/photos", controller.GetAllPhotos)
 
+    // Tambahkan route untuk UpdateUser
+    protectedRoutes.PUT("/users/:userId", controller.UpdateUser)
+
     router.Run(":8000")
     fmt.Println("Server running on port 8000")
 }

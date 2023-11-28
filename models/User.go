@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"html"
 	"pbi-rakamin-go/database"
 	"strings"
@@ -26,6 +27,22 @@ func (user *User) Save() (*User, error) {
     return user, nil
 }
 
+func (user *User) Update() error {
+    // Pastikan user memiliki ID yang valid
+    if user.ID == 0 {
+        return errors.New("Invalid user ID")
+    }
+
+    // Lakukan operasi update ke database
+    err := database.Database.Model(&User{}).Where("id = ?", user.ID).Updates(&user).Error
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
+
 func (user *User) BeforeSave(*gorm.DB) error {
     passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
     if err != nil {
@@ -40,9 +57,9 @@ func (user *User) ValidatePassword(password string) error {
     return bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 }
 
-func FindUserByUsername(username string) (User, error) {
+func FindUserByEmail(email string) (User, error) {
     var user User
-    err := database.Database.Where("username=?", username).Find(&user).Error
+    err := database.Database.Where("email=?", email).Find(&user).Error
     if err != nil {
         return User{}, err
     }
@@ -57,7 +74,6 @@ func FindUserById(id uint) (User, error) {
     }
     return user, nil
 }
-
 
 
 

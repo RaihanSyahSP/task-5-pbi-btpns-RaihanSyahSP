@@ -9,7 +9,7 @@ import (
 )
 
 func Register(context *gin.Context) {
-    var input models.AuthenticationInput
+    var input models.RegitstrationInput
 
     if err := context.ShouldBindJSON(&input); err != nil {
         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -33,14 +33,14 @@ func Register(context *gin.Context) {
 }
 
 func Login(context *gin.Context) {
-    var input models.AuthenticationInput
+    var input models.LoginInput
 
     if err := context.ShouldBindJSON(&input); err != nil {
         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         return
     }
 
-    user, err := models.FindUserByUsername(input.Username)
+    user, err := models.FindUserByEmail(input.Email)
 
     if err != nil {
         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -60,6 +60,50 @@ func Login(context *gin.Context) {
         return
     }
 
-    context.JSON(http.StatusOK, gin.H{"jwt": jwt})
+    context.JSON(http.StatusOK, gin.H{
+        "id": user.ID,
+        "username": user.Username,
+        "email": user.Email,
+        "password": user.Password,
+        "jwt": jwt,
+    })
 } 
+
+// func Login(context *gin.Context) {
+//     var input models.AuthenticationInput
+
+//     if err := context.ShouldBindJSON(&input); err != nil {
+//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//         return
+//     }
+
+//     user, err := models.FindUserByUsername(input.Username)
+
+//     if err != nil {
+//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//         return
+//     }
+
+//     // Validate the password using bcrypt's CompareHashAndPassword function
+//     err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password))
+
+//     if err != nil {
+//         context.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password"})
+//         return
+//     }
+
+//     jwt, err := helper.GenerateJWT(user)
+
+//     if err != nil {
+//         context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+//         return
+//     }
+
+//     context.JSON(http.StatusOK, gin.H{
+//         "id": user.ID,
+//         "username": user.Username,
+//         "email": user.Email,
+//         "jwt": jwt,
+//     })
+// }
 
