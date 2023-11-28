@@ -28,12 +28,11 @@ func (user *User) Save() (*User, error) {
 }
 
 func (user *User) Update() error {
-    // Pastikan user memiliki ID yang valid
+
     if user.ID == 0 {
         return errors.New("Invalid user ID")
     }
 
-    // Lakukan operasi update ke database
     err := database.Database.Model(&User{}).Where("id = ?", user.ID).Updates(&user).Error
     if err != nil {
         return err

@@ -23,7 +23,6 @@ func (photo *Photo) Save() (*Photo, error) {
 		return nil, err
 	}
 
-	// Preload the User information
 	err = database.Database.Preload("Photos").Where("ID=?", photo.UserID).Find(&photo.User).Error
 	if err != nil {
 		return nil, err
@@ -33,12 +32,11 @@ func (photo *Photo) Save() (*Photo, error) {
 }
 
 func (photo *Photo) Update() error {
-	// Pastikan photo memiliki ID yang valid
+	
 	if photo.ID == 0 {
 		return errors.New("Invalid photo ID")
 	}
 
-	// Lakukan operasi update ke database
 	err := database.Database.Model(&Photo{}).Where("id = ?", photo.ID).Updates(&photo).Error
 	if err != nil {
 		return err
@@ -48,12 +46,11 @@ func (photo *Photo) Update() error {
 }
 
 func (photo *Photo) Delete() error {
-	// Pastikan photo memiliki ID yang valid
+	
 	if photo.ID == 0 {
 		return errors.New("Invalid photo ID")
 	}
 
-	// Lakukan operasi delete ke database
 	err:= database.Database.Model(&Photo{}).Where("id = ?", photo.ID).Delete(&photo).Error
 	if err != nil {
 		return err

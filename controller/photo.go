@@ -31,14 +31,12 @@ func AddPhoto(context *gin.Context) {
 		return
 	}
 
-	// Fetch the User information to include in the response
 	userWithPhotos, err := models.FindUserById(user.ID)
 	if err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Exclude the Photos array from the User information in the response
 	response := gin.H{
 		"data": gin.H{
 			"CreatedAt": savedPhoto.CreatedAt,
@@ -71,7 +69,6 @@ func GetAllPhotos(context *gin.Context) {
         return
     }
 
-    // Exclude the "User" attribute in the response
     var photoResponse []gin.H
     for _, photo := range user.Photos {
         photoResponse = append(photoResponse, gin.H{
@@ -97,9 +94,7 @@ func UpdatePhoto (context *gin.Context) {
 		return
 	}
 
-	// Dapatkan ID photo dari URL
 	photoId := getPhotoIDFromRequest(context)
-	// Dapatkan photo dari database
 
 	photo, err := models.FindPhotoById(photoId)
 	if err != nil {
@@ -107,31 +102,26 @@ func UpdatePhoto (context *gin.Context) {
 		return
 	}
 
-	// Pastikan photo yang akan diupdate adalah milik user yang sedang login
 	if photo.UserID != user.ID {
 		context.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to update this photo"})
 		return
 	}
 
-	// Dapatkan input dari body request
 	var input models.Photo
 	if err := context.ShouldBindJSON(&input); err != nil {
 		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Update informasi photo sesuai dengan input
 	photo.Title = input.Title
 	photo.Caption = input.Caption
 	photo.PhotoURL = input.PhotoURL
 
-	// Lakukan operasi update ke database
 	if err := photo.Update(); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Kirim response ke client
 	context.JSON(http.StatusOK, gin.H{"data": photo})
 }
 
@@ -143,9 +133,7 @@ func DeletePhoto(context *gin.Context) {
 		return
 	}
 
-	// Dapatkan ID photo dari URL
 	photoId := getPhotoIDFromRequest(context)
-	// Dapatkan photo dari database
 
 	photo, err := models.FindPhotoById(photoId)
 	if err != nil {
@@ -153,26 +141,20 @@ func DeletePhoto(context *gin.Context) {
 		return
 	}
 
-	// Pastikan photo yang akan diupdate adalah milik user yang sedang login
 	if photo.UserID != user.ID {
 		context.JSON(http.StatusForbidden, gin.H{"error": "Not authorized to update this photo"})
 		return
 	}
 
-	// Lakukan operasi delete ke database
 	if err := photo.Delete(); err != nil {
 		context.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Kirim response ke client
 	context.JSON(http.StatusOK, gin.H{"message": "Photo deleted successfully"})
 }
 
 func getPhotoIDFromRequest(context *gin.Context) string {
-    // Fungsi ini bergantung pada bagaimana Anda mengekstrak userId dari request.
-    // Sesuaikan dengan kebutuhan dan implementasi endpoint Anda.
-    // Contoh: Mendapatkan userId dari path parameter
     photoId := context.Param("photoId")
     return photoId
 }
